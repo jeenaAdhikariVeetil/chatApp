@@ -19,8 +19,7 @@ public class MessageController {
     @PostMapping("/send/message")
     public ResponseEntity<Authenticator.Success> sendMessage(@RequestBody MessageRequest messageRequest) {
 
-        messageService.sendMessage(messageRequest.getSenderId(),
-                messageRequest.getReceiverId(), messageRequest.getMessage());
+        messageService.sendMessage(messageRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
 
 

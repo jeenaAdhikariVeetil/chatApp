@@ -1,6 +1,7 @@
 package com.chat.app.chatApp.service;
 
+import com.chat.app.chatApp.entity.MessageRequest;
+
 public interface MessageService {
-    public void sendMessage(Long senderId,Long reciverId,
-                            String message);
+    public void sendMessage(MessageRequest messageRequest);
 }

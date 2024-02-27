@@ -1,36 +1,27 @@
 package com.chat.app.chatApp.service;
 
-import com.chat.app.chatApp.entity.Message;
-import com.chat.app.chatApp.entity.Users;
-import com.chat.app.chatApp.exception.SelfMessageException;
-import com.chat.app.chatApp.exception.UserNotFound;
-import com.chat.app.chatApp.repository.MessageRepo;
-import com.chat.app.chatApp.repository.UserRepo;
+import com.chat.app.chatApp.constant.ChatConstants;
+import com.chat.app.chatApp.entity.MessageRequest;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MessageServiceImpl implements MessageService {
-    private MessageRepo messageRepo;
-    private UserRepo userRepo;
+    private RabbitTemplate rabbitTemplate;
 
-    public MessageServiceImpl(MessageRepo messageRepo, UserRepo userRepo) {
-        this.messageRepo = messageRepo;
-        this.userRepo = userRepo;
+    public MessageServiceImpl(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
-    public void sendMessage(Long senderId, Long receiverId, String content) {
-        Users sender = userRepo.findById(senderId).
-                orElseThrow(() -> new UserNotFound("Sender not found"));
-        Users receiver = userRepo.findById(receiverId).
-                orElseThrow(() -> new UserNotFound("Receiver not found"));
-        if (sender.equals(receiver)) {
-            throw new SelfMessageException("Cannot send a message to yourself");
+    public void sendMessage(MessageRequest messageRequest) {
+        try {
+            rabbitTemplate.convertAndSend(ChatConstants.TOPIC_NAME, ChatConstants.ROUTING_KEY,
+                    messageRequest);
+        } catch (AmqpException ex) {
+            throw new AmqpException(ChatConstants.AMQP_ERROR);
         }
-        Message message = new Message();
-        message.setSender(sender);
-        message.setReceiver(receiver);
-        message.setContent(content);
-        messageRepo.save(message);
+
     }
 }
