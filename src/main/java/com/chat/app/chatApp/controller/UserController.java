@@ -4,6 +4,7 @@ import com.chat.app.chatApp.entity.Users;
 import com.chat.app.chatApp.service.UserServiceImpl;
 import com.sun.net.httpserver.Authenticator;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/account")
+    @PostMapping(value = "/account", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Authenticator.Success> createAccount(@RequestBody Users user) {
             userService.addAccount(user);
         return new ResponseEntity<>(HttpStatus.CREATED);

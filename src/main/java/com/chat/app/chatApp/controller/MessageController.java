@@ -5,6 +5,7 @@ import com.chat.app.chatApp.entity.MessageRequest;
 import com.chat.app.chatApp.service.MessageServiceImpl;
 import com.sun.net.httpserver.Authenticator;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class MessageController {
         this.messageService = messageService;
     }
 
-    @PostMapping("/message")
+    @PostMapping(value = "/message", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Authenticator.Success> sendMessage(@RequestBody MessageRequest messageRequest) {
         messageService.sendMessage(messageRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
